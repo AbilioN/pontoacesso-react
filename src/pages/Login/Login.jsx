@@ -5,22 +5,20 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import axios from "axios";
-
+import { Redirect } from "react-router-dom";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <a color="inherit" href="https://material-ui.com/">
         Your Website
-      </Link>{" "}
+      </a>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -47,39 +45,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn(props) {
   const classes = useStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [clientToken, setClientToken] = useState("");
 
-  function authorized() {
-    if (clientToken) {
-      //   history.push("/");
-      console.log("autorizado");
-    }
-  }
-  function login() {
-    axios({
-      method: "post",
-
-      url: "http://localhost:8000/api/login",
+  async function loginUser(credentials) {
+    return fetch("http://localhost:8000/api/login", {
+      method: "POST",
       headers: {
-        "Content-type": "application/json",
+        "Content-Type": "application/json",
       },
-      data: {
-        email: "netobalby@gmail.com",
-        password: "123456",
-      },
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      body: JSON.stringify(credentials),
+    }).then((data) => data.json());
   }
+  const { history } = props;
 
-  function teste(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log(e.target.value);
+    const token = await loginUser({ email, password });
+    console.log(token);
+
+    // usando sessionStorage por nao conseguir passar o token adiante
+    localStorage.setItem("token", token.access_token);
+    if (token.access_token) {
+      console.log("aqui");
+      //   return <Redirect to="/home" />;
+      window.location.replace("http://localhost:3000/home");
+    } else {
+      return;
+    }
   }
 
   return (
@@ -92,7 +88,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate onSubmit={(e) => teste(e)}>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -103,6 +99,7 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -114,6 +111,7 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -130,14 +128,14 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <a href="#" variant="body2">
                 Forgot password?
-              </Link>
+              </a>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <a href="#" variant="body2">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </a>
             </Grid>
           </Grid>
         </form>

@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Modal, Button, TextareaAutosize, Grid } from "@material-ui/core";
-
+import axios from "axios";
 function getModalStyle() {
   const top = 50;
   const left = 50;
@@ -23,11 +23,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleModal({ visivel }) {
+export default function SimpleModal({ visivel, infoPonto }) {
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
-  const [modalStyle] = React.useState(getModalStyle);
-  const [open, setOpen] = React.useState(false);
+  const [modalStyle] = useState(getModalStyle);
+  const [open, setOpen] = useState(false);
+  const [descricao, setDescricao] = useState("");
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (visivel) {
@@ -47,6 +50,23 @@ export default function SimpleModal({ visivel }) {
     console.log("yes");
   }
 
+  async function iniciarPausa() {
+    axios({
+      method: "post",
+
+      url: "http://localhost:8000/api/pausa/iniciar",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        ponto_id: infoPonto,
+        descricao: descricao,
+      },
+    })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }
   const body = (
     <div style={modalStyle} className={classes.paper}>
       <Grid container>
@@ -58,10 +78,11 @@ export default function SimpleModal({ visivel }) {
             aria-label="minimum height"
             rowsMin={3}
             placeholder="Minimum 3 rows"
+            onChange={(e) => setDescricao(e.target.value)}
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" size="small" onClick={enviarPausa}>
+          <Button variant="contained" size="small" onClick={iniciarPausa}>
             Enviar
           </Button>
         </Grid>

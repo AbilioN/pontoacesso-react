@@ -4,19 +4,13 @@ import axios from "axios";
 import MyStopwatch from "../../components/Clock";
 import Modal from "../../components/Modal";
 
-export default function Home() {
+export default function Home({ route }) {
   const [comecarTimer, setComecarTimer] = useState(false);
   const [respServer, setRespServer] = useState({});
   const [sucesso, setSucesso] = useState(false);
   const [modalVisivel, setModalVisivel] = useState(false);
 
-  useEffect(() => {
-    console.log(respServer);
-  }, [respServer]);
-
-  const token =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTYxNTE0NTU5MiwiZXhwIjoxNjE1MTQ5MTkyLCJuYmYiOjE2MTUxNDU1OTIsImp0aSI6ImdES2dvVHI5QXNFNklWNWgiLCJzdWIiOjEsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.pfEIBiNHQxVibdXHRSPkkVex6e2LKTptJ1Msdzbs4JI";
-
+  const token = localStorage.getItem("token");
   function iniciarPonto(data) {
     setRespServer(data);
     setSucesso(true);
