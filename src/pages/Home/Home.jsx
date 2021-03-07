@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Container, Grid, Typography, Button } from "@material-ui/core";
+import { Container, Grid, Typography, Button, Grow } from "@material-ui/core";
 import axios from "axios";
 import MyStopwatch from "../../components/Clock";
-const Home = () => {
+import Modal from "../../components/Modal";
+
+export default function Home() {
   const [comecarTimer, setComecarTimer] = useState(false);
   const [respServer, setRespServer] = useState({});
   const [sucesso, setSucesso] = useState(false);
+  const [modalVisivel, setModalVisivel] = useState(false);
 
   useEffect(() => {
     console.log(respServer);
   }, [respServer]);
 
   const token =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTYxNTEzNTc2MSwiZXhwIjoxNjE1MTM5MzYxLCJuYmYiOjE2MTUxMzU3NjEsImp0aSI6Iks3NW14cXRnRVd4NUtRcWEiLCJzdWIiOjEsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.aTZK6l_17EN9UoFA0cog6ZY8gDvjR5h4iyN4n1x0ya8";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTYxNTE0NTU5MiwiZXhwIjoxNjE1MTQ5MTkyLCJuYmYiOjE2MTUxNDU1OTIsImp0aSI6ImdES2dvVHI5QXNFNklWNWgiLCJzdWIiOjEsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.pfEIBiNHQxVibdXHRSPkkVex6e2LKTptJ1Msdzbs4JI";
 
   function iniciarPonto(data) {
     setRespServer(data);
     setSucesso(true);
+    setModalVisivel(false);
   }
 
   function pararPonto() {
     setSucesso(false);
+    setModalVisivel(true);
   }
 
   async function getPonto() {
@@ -54,9 +59,10 @@ const Home = () => {
             {sucesso ? "Iniciar pausa" : "Iniciar ponto"}
           </Button>
         </Grid>
+        <Grid item xs={12}>
+          <Modal visivel={modalVisivel} infoPonto={respServer.ponto_id} />
+        </Grid>
       </Grid>
     </Container>
   );
-};
-
-export default Home;
+}
