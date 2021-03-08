@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleModal({ visivel, infoPonto }) {
+export default function SimpleModal(props) {
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = useState(getModalStyle);
@@ -33,10 +33,10 @@ export default function SimpleModal({ visivel, infoPonto }) {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (visivel) {
+    if (props.visivel) {
       setOpen(true);
     }
-  }, [visivel]);
+  }, [props.visivel]);
 
   function handleOpen() {
     setOpen(true);
@@ -50,22 +50,31 @@ export default function SimpleModal({ visivel, infoPonto }) {
     console.log("yes");
   }
 
-  async function iniciarPausa() {
-    axios({
-      method: "post",
+  //   async function iniciarPausa() {
+  //     axios({
+  //       method: "post",
 
-      url: "http://localhost:8000/api/pausa/iniciar",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
-        ponto_id: infoPonto,
-        descricao: descricao,
-      },
-    })
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+  //       url: "http://localhost:8000/api/pausa/iniciar",
+  //       headers: {
+  //         "Content-type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       data: {
+  //         ponto_id: infoPonto,
+  //         descricao: descricao,
+  //       },
+  //     })
+  //       .then((res) => handlePause(res.data))
+  //       .catch((err) => console.log(err));
+  //   }
+
+  function handleChange(e) {
+    props.onChange(e.target.value);
+  }
+
+  function enviarForm() {
+    props.submit();
+    setOpen(false);
   }
   const body = (
     <div style={modalStyle} className={classes.paper}>
@@ -78,11 +87,11 @@ export default function SimpleModal({ visivel, infoPonto }) {
             aria-label="minimum height"
             rowsMin={3}
             placeholder="Minimum 3 rows"
-            onChange={(e) => setDescricao(e.target.value)}
+            onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" size="small" onClick={iniciarPausa}>
+          <Button variant="contained" size="small" onClick={enviarForm}>
             Enviar
           </Button>
         </Grid>
